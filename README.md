@@ -8,4 +8,4 @@ pour comparaison des temps d'execution.
   - calcul PI sur 10 000 (time echo "scale=10000; 4*a(1)" | bc -l)
   - tri V6 50 000 16 2 avec le programme de tri version 6 du bubble sort avec une suite aléatoire 
   - hardinfo
-  - 
+    
