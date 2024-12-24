@@ -1,9 +1,13 @@
+#ifndef _POSIX_C_SOURCE
+#define _POSIX_C_SOURCE 199309L
+#endif
+
 #include <stdio.h>
 #include <math.h>
 #include <time.h>
 
-#define ITERATIONS 1000000000
-//#define ITERATIONS 100000000
+
+#define ITERATIONS 100000000
 
 double get_time_elapsed(struct timespec start, struct timespec end) {
     return (end.tv_sec - start.tv_sec) + (end.tv_nsec - start.tv_nsec) / 1e9;
