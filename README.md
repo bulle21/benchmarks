@@ -8,4 +8,21 @@ pour comparaison des temps d'execution.
   - calcul PI sur 10 000 (time echo "scale=10000; 4*a(1)" | bc -l)
   - tri V6 50 000 16 2 avec le programme de tri version 6 du bubble sort avec une suite aléatoire 
   - hardinfo
-    
+
+../..    
+pour linux ubuntu , installer les paquets suivants : 
+sudo apt install clinfo nvidia-opencl-dev ocl-icd-opencl-dev build-essential libc6-dev 
+
+
+pour carte nvidia : sudo apt install nvidia-opencl-dev ocl-icd-libopencl1 nvidia-opencl-dev 
+
+pour carte AMD : sudo apt install opencl-amdgpu-pro ocl-icd-libopencl1 opencl-amdgpu-pro
+
+pour intel avec gpu intégré : sudo apt install intel-opencl-icd ocl-icd-libopencl1 intel-opencl-icd
+../..
+
+
+
+
+
+
