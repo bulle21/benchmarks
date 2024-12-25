@@ -11,7 +11,7 @@ pour comparaison des temps d'execution.
 
 ../..    
 pour linux ubuntu , installer les paquets suivants : 
-sudo apt install clinfo nvidia-opencl-dev ocl-icd-opencl-dev build-essential libc6-dev 
+sudo apt install clinfo ocl-icd-opencl-dev build-essential libc6-dev 
 
 
 pour carte nvidia : sudo apt install nvidia-opencl-dev ocl-icd-libopencl1 nvidia-opencl-dev 
