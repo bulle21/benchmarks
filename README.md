@@ -25,7 +25,6 @@ pour intel avec gpu intégré : sudo apt install intel-opencl-icd ocl-icd-libope
 pour le programme : 2-benchmark_multicoeurs.c
 il utilise la variable d'environnement NUMPLUS pour determiner le nombre de threads
 pour linux dans .profile  : 
-# parallel make ... 
 export NUMCPUS=`grep -c '^processor' /proc/cpuinfo`
 alias make='nice make -j$NUMCPUS --load-average=$NUMCPUS'
 
