@@ -29,7 +29,8 @@ export NUMCPUS=`grep -c '^processor' /proc/cpuinfo`
 alias make='nice make -j$NUMCPUS --load-average=$NUMCPUS'
 
 pour osx : 
-
+export NUMCPUS=`sysctl -n hw.ncpu`
+alias make='nice make -j$NUMCPUS --load-average=$NUMCPUS'
 
 
 
