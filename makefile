@@ -31,9 +31,6 @@ all: $(TARGETS)
 3-benchmark_gpu-v2: 3-benchmark_gpu-v2.c
 	$(CC) $(CFLAGS) -o 3-benchmark_gpu-v2 3-benchmark_gpu-v2.c $(LIBS) $(OPENCL_LIBS)
 
-benchmark_opengl_2_1_simple: benchmark_opengl_2_1_simple.c
-	$(CC) $(CFLAGS) -o benchmark_opengl_2_1_simple benchmark_opengl_2_1_simple.c $(LIBS) $(OPENGL_LIBS)
-
 # Règle pour nettoyer les fichiers générés
 clean:
 	rm -f $(TARGETS)
