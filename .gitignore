@@ -1,0 +1,15 @@
+# Binaires compilés
+1-benchmark
+2-benchmark_multicoeurs
+3-benchmark_gpu
+3-benchmark_gpu-v2
+benchmark_opengl_2_1_simple
+tri
+
+# Fichiers de backup
+*.bak
+*.backup
+
+# Fichiers temporaires
+*.o
+*.out

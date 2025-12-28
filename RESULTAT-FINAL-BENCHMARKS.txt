@@ -1,0 +1,183 @@
+================================================================================
+CORSAIRE - RÉSULTAT FINAL BENCHMARKS GPU
+================================================================================
+Date : 2025-12-28
+Machine : Corsaire (i7-4790K @ 4.4 GHz + GTX 760)
+
+================================================================================
+PROBLÈME IDENTIFIÉ
+================================================================================
+
+Les benchmarks GPU originaux donnaient des temps irréalistes car le 
+compilateur OpenCL optimisait le code au lieu de faire vraiment travailler la GPU.
+
+Programme 3 (original) : 0.32s
+Programme 4 (original) : 0.00s
+→ Compilateur optimise sin(x)*cos(x) et autres opérations simples
+→ GPU pas vraiment saturé
+
+================================================================================
+SOLUTION CRÉÉE : 3-benchmark_gpu-v2.c
+================================================================================
+
+Modifications pour empêcher les optimisations :
+
+1. Calculs complexes variés (5 par itération) :
+   - sin(x), cos(x), tan(x)
+   - sqrt(fabs(s))
+   - exp(s * 0.01f)
+   - log(fabs(c) + 1.0f)  
+   - powr(fabs(s), 0.3f)
+
+2. Variables intermédiaires stockées (empêche fusion)
+3. 10x plus d'itérations (10 milliards)
+4. Saturation complète GPU (294912 threads = 1152 CUDA cores)
+5. clFinish() explicite pour mesurer le vrai temps
+
+================================================================================
+RÉSULTATS TESTS - CORSAIRE (GTX 760)
+================================================================================
+
+CPU Benchmarks :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1-benchmark (mono-thread)        : 48.64 s
+2-benchmark_multicoeurs (8 T)    : 9.82 s  (speedup 4.95x)
+
+GPU Benchmarks :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+3-benchmark_gpu (original)       : 0.32 s  ⚠️ OPTIMISÉ (pas fiable)
+3-benchmark_gpu-v2 (corrigé)     : 2.01 s  ✅ VRAIMENT SATURÉ
+
+Performance réelle GTX 760 :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Temps : 2.01 secondes
+Opérations : 50 milliards (10 milliards iter × 5 ops)
+Performance : 24.87 GFlops
+Architecture : Kepler GK104 (1152 CUDA cores @ 980-1033 MHz)
+Mémoire : 2 GB GDDR5
+
+================================================================================
+ANALYSE PERFORMANCE
+================================================================================
+
+Speedup GPU vs CPU :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+vs CPU mono-thread (48.64s) : 24.2x plus rapide
+vs CPU multi-thread (9.82s) : 4.88x plus rapide
+
+Performance relative :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+GTX 760 (2013) : 24.87 GFlops (ce benchmark)
+Spec théorique : ~2250 GFlops (FP32 single precision)
+Utilisation : ~1.1% de la performance théorique
+
+Note : Ce benchmark teste les unités SFU (Special Function Units) pour
+sin/cos/tan/exp/log, pas les ALU classiques. Les SFU sont limitées à
+quelques unités par SMX sur Kepler, d'où la performance relativement basse.
+
+Pour référence (ALU pures) :
+  Perf théorique GTX 760 : 2.25 TFlops (multiplications/additions)
+  Perf mesurée (SFU) : 24.87 GFlops (trigonométrie/exponentielle)
+
+================================================================================
+OVERCLOCK CPU DÉTECTÉ
+================================================================================
+
+i7-4790K Configuration :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Fréquence mesurée (8 threads 100%) : 4400 MHz
+Fréquence spec Intel (8 threads)    : 4000 MHz
+Overclock : +400 MHz (+10%) via MCE (Multi-Core Enhancement)
+
+Températures sous charge :
+  Repos : 30-36°C
+  Charge 100% : 65-66°C  
+  Après stress : 28-32°C
+
+Refroidissement : AIO (watercooling) - EXCELLENT
+Marge thermique : 14°C avant warning (80°C limit)
+Stabilité : Parfaite (2 minutes stress test)
+
+Potentiel : 4.6-4.8 GHz possible avec cet AIO
+
+================================================================================
+BENCHMARK OPENGL MANQUANT
+================================================================================
+
+Programme : benchmark_opengl_2_1_simple
+Statut : Non compilé (dépendance libglfw manquante)
+
+Pour compiler :
+  sudo apt install libglfw3-dev
+  make benchmark_opengl_2_1_simple
+
+================================================================================
+FICHIERS CRÉÉS / MODIFIÉS
+================================================================================
+
+Nouveaux programmes :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ 3-benchmark_gpu-v2.c              Benchmark GPU corrigé (fonctionne)
+✅ README-GTX760.md                  Documentation optimisations GPU
+
+Makefile modifié :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Ajout 3-benchmark_gpu-v2
+✅ Ajout cible 'test' pour lancer tous les benchmarks
+
+Documentation /home/hal/tmp/corsaire/ :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ BENCHMARKS-COMPLETS.txt           Résultats CPU + GPU + AIO
+✅ CONFIGURATION-GTX760.txt           Config kernel + GRUB multiboot
+✅ INVENTAIRE-COMPLET.txt             Specs matérielles
+✅ DISQUES-SMART-ANALYSE-COMPLETE.txt SMART tous disques
+✅ + 8 autres fichiers inventaire
+
+================================================================================
+UTILISATION RECOMMANDÉE
+================================================================================
+
+Benchmarks fiables :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+cd ~/sources/benchmarks
+
+# CPU mono-thread
+./1-benchmark
+
+# CPU multi-thread
+./2-benchmark_multicoeurs
+
+# GPU (VERSION CORRIGÉE - RECOMMANDÉE)
+echo "0" | ./3-benchmark_gpu-v2
+
+# Tous les benchmarks d'un coup
+make test
+
+Benchmarks à ÉVITER (optimisés) :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+❌ 3-benchmark_gpu (original)       → Compilateur optimise
+
+================================================================================
+CONCLUSION
+================================================================================
+
+Performance Corsaire (GTX 760 + i7-4790K @ 4.4 GHz) :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ CPU : Bon pour 2014, overclocké +10% (MCE actif)
+✅ GPU : OpenCL fonctionnel, 24.87 GFlops (calculs SFU)
+✅ AIO : Excellent refroidissement (66°C max sous charge)
+✅ Stabilité : Parfaite sous stress
+
+Leçon apprise :
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Les compilateurs OpenCL optimisent agressivement les calculs simples.
+Pour benchmarker vraiment un GPU, il faut :
+  1. Utiliser des calculs complexes variés
+  2. Éviter les patterns optimisables (sin*cos → 0.5*sin(2x))
+  3. Stocker résultats intermédiaires
+  4. Utiliser clFinish() explicite
+  5. Ne pas utiliser -cl-fast-relaxed-math pour benchmarks
+
+Notre version v2 fait vraiment travailler la GTX 760 ! ✅
+
+================================================================================
